@@ -1,0 +1,19 @@
+# Example task — copy and fill for new tasks
+id: task-001
+project: approvals-notifications
+jira: APPROV-1234  # Jira ticket key this task contributes to
+description: "Implement admin override notification Figma page"
+assigned_to: add-approve-button
+status: pending  # pending | assigned | in-progress | review | done | failed | blocked
+context_file: contexts/task-001.md
+depends_on: []  # task IDs that must complete first
+created_at: "2026-06-21T10:00:00"
+started_at: null  # ISO timestamp when BigBrain dispatched the task
+completed_at: null  # ISO timestamp when devbox Claude returned result
+duration_minutes: null  # computed from started_at → completed_at
+cost_usd: null  # from Claude's total_cost_usd in JSON output
+session_id: null  # Claude session ID used for this task
+result: null  # JSON blob from devbox Claude
+review_decision: null  # approved | changes-requested | escalated
+review_notes: null
+retry_count: 0

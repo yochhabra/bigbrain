@@ -1,0 +1,16 @@
+# Example project registry entry — copy and fill for new projects
+name: "Approvals Platform Notifications"
+devbox: add-approve-button
+devbox_host: qa-mydev--0e88fc2dfccb361ad.northwest.stripe.io
+repo: stripe-internal/mint
+workspace: zoolander
+base_branch: master
+working_branch: yochhabra/approvals-notifs
+session_id: null
+status: active  # active | paused | completed
+priority: high
+goal: "Build Figma notification pages for all approval events"
+current_phase: "Implementing admin override flow"
+tasks_completed: []
+tasks_pending: []
+notes: ""
