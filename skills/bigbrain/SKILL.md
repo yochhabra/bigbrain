@@ -182,6 +182,53 @@ ssh ... "cd /pay/src && pay stack create <branch-name> --current"
 
 Worker Claudes never create branches. If a task requires a new branch, BigBrain creates it first, then assigns the task.
 
+## Ephemeral Devbox Management
+
+BigBrain can spawn devboxes on demand for specific tasks. Each devbox is single-use: created for a task, stopped when the PR is done.
+
+### Spawning a new devbox
+
+**Always confirm with the human first:**
+```
+I'd like to create a new devbox for:
+  Project: {project}
+  Task: {description}
+  Branch: {branch}
+  Repo/workspace: {repo}/{workspace}
+  
+Shall I proceed?
+```
+
+Only after confirmation:
+```bash
+pay remote new <name> --prompt "" --repo mint --workspace zoolander
+```
+Or without a prompt (we'll invoke Claude ourselves after setup):
+```bash
+pay remote new <name>
+```
+
+Then wait for it to be ready, set up ControlMaster, SCP config, and assign the task.
+
+### Lifecycle
+
+1. **Create** — BigBrain spawns devbox (with human confirmation)
+2. **Setup** — SCP devbox-config rules + settings, establish ControlMaster
+3. **Work** — Assign tasks, worker Claude implements
+4. **Complete** — PR merged (detected via `code_get_pull_request` or user confirms)
+5. **Stop** — BigBrain stops the devbox:
+   ```bash
+   pay remote stop <name>
+   ```
+   Then confirms: "Stopped devbox {name} — PR {link} is merged, no further work needed."
+
+### Rules
+
+- **Never reuse** a stopped devbox for a different task/project
+- **Never stop** a devbox without confirming the PR is merged or user says to stop
+- **Always confirm** before creating — devboxes cost resources
+- Track devbox lifecycle in project YAML: `devbox_status: running | stopped`
+
 ## Getting Devbox Host
 
 To find a devbox's SSH host:
