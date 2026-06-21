@@ -133,6 +133,55 @@ When the user invokes BigBrain, interpret their intent:
 - **"generate snippet"** / **"weekly update"** — Generate weekly snippet draft (see below)
 - **"compass update"** / **"update compass"** — Generate Compass project update (see below)
 
+## Stack Management
+
+BigBrain is responsible for coordinating stacked PRs across devboxes. Worker Claudes NEVER create branches or switch branches themselves.
+
+### Project YAML tracks the stack
+
+```yaml
+# In projects/*.yaml
+stack:
+  - branch: yochhabra/feature-part-1
+    devbox: add-approve-button
+    status: merged
+  - branch: yochhabra/feature-part-2
+    devbox: add-approve-button
+    status: in-progress
+  - branch: yochhabra/feature-part-3
+    devbox: yodev-2
+    status: pending
+```
+
+### When a parent branch gets updated/merged
+
+When a parent branch in the stack is merged or updated (detected via CI status, PR merge, or user telling you):
+
+1. Identify all child branches in the stack
+2. For each child branch's devbox, instruct the worker Claude to sync:
+   ```
+   ssh ... "claude -p --output-format json -r <session_id> 'A parent branch in your stack was updated. Run: pay stack restack && pay stack push. Report the result.'"
+   ```
+3. Wait for confirmation before assigning new tasks on those branches
+
+### Task context includes branch info
+
+Every task context file MUST specify:
+```markdown
+## Constraints
+- Branch: yochhabra/feature-part-2 (YOU MUST STAY ON THIS BRANCH)
+- Base: yochhabra/feature-part-1
+```
+
+### Branch creation
+
+Only BigBrain creates branches (via SSH):
+```bash
+ssh ... "cd /pay/src && pay stack create <branch-name> --current"
+```
+
+Worker Claudes never create branches. If a task requires a new branch, BigBrain creates it first, then assigns the task.
+
 ## Getting Devbox Host
 
 To find a devbox's SSH host:
